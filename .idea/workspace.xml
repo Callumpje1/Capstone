@@ -1,30 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidLayouts">
-    <shared>
-      <config />
-    </shared>
-  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="621be902-7fdd-4e49-a476-6fd19a9e14ca" name="Changes" comment="" />
+    <list default="true" id="c96f9106-a573-4017-953c-96f34cba2992" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[/Users/callum/.android/avd/Pixel_5_API_33.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
   </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="ProjectId" id="2J7y1tPREwP3UYnlrgF8GwXv2E1" />
+  <component name="ProjectId" id="2J82gsIrF2FH917xhxumu4fAWPY" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -37,7 +28,7 @@
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
-      <module name="Locals.app.main" />
+      <module name="LocalsApp.app.main" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
@@ -97,11 +88,11 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="621be902-7fdd-4e49-a476-6fd19a9e14ca" name="Changes" comment="" />
-      <created>1671443204181</created>
+      <changelist id="c96f9106-a573-4017-953c-96f34cba2992" name="Changes" comment="" />
+      <created>1671445504516</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1671443204181</updated>
+      <updated>1671445504516</updated>
     </task>
     <servers />
   </component>
