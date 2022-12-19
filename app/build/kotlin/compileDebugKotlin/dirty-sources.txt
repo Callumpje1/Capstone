@@ -1,0 +1,10 @@
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/notifications/NotificationsViewModel.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/theme/Type.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/home/HomeFragment.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/notifications/NotificationsFragment.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/dashboard/DashboardFragment.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/MainActivity.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/home/HomeViewModel.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/dashboard/DashboardViewModel.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/theme/Color.kt
+/Users/callum/Desktop/Capstone/development/capstone/app/src/main/java/com/example/locals/ui/theme/Theme.kt
