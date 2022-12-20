@@ -17,8 +17,10 @@ import com.google.android.gms.maps.model.LatLng
 
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
+
     var mapView: MapView? = null
     var map: GoogleMap? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,8 +57,8 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         map!!.moveCamera(
             CameraUpdateFactory.newLatLng(
                 LatLng(
-                    25.9,
-                    30.15
+                    52.22,
+                    4.53
                 )
             )
         )

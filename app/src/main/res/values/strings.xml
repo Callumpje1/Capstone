@@ -6,4 +6,9 @@
     <string name="title_spots">Spots</string>
     <string name="title_favourites">Favourites</string>
     <string name="add_location">Add location to map</string>
+    <string name="tv_cafe_title">Cafe\'s</string>
+    <string name="tv_restaurant_title">Restaurants</string>
+    <string name="tv_favourites_title">Favourite Spots</string>
+    <string name="tv_location_title">Title</string>
+    <string name="logo">Locals logo</string>
 </resources>
