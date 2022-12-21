@@ -1,43 +1,52 @@
 package com.example.localsapp.ui.spots
 
 import android.Manifest
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.localsapp.R
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.example.localsapp.databinding.FragmentSpotsBinding
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
 
-    var mapView: MapView? = null
-    var map: GoogleMap? = null
+    private var _binding: FragmentSpotsBinding? = null
+
+    private val binding get() = _binding!!
+
+    private var mapView: MapView? = null
+
+    private var map: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val v: View = inflater.inflate(R.layout.fragment_spots, container, false)
-
         // Gets the MapView from the XML layout and creates it
         mapView = v.findViewById<View>(R.id.mapview) as MapView
         mapView!!.onCreate(savedInstanceState)
-        mapView!!.getMapAsync(this)
+        mapView!!.getMapAsync(this);
+
         return v
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map!!.uiSettings.isMyLocationButtonEnabled = false
+        map!!.uiSettings.isMyLocationButtonEnabled = true
         if (context?.let {
                 ActivityCompat.checkSelfPermission(
                     it,
@@ -52,16 +61,17 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         ) {
             return
         }
-        map!!.isMyLocationEnabled = true
 
-        map!!.moveCamera(
-            CameraUpdateFactory.newLatLng(
-                LatLng(
-                    52.22,
-                    4.53
-                )
-            )
-        )
+        showDialog()
+        map!!.isMyLocationEnabled = true
+    }
+
+    private fun showDialog() {
+        binding.btnAdd.setOnClickListener {
+            val dialog = Dialog(requireContext())
+            dialog.setContentView(R.layout.add_location_dialog)
+            dialog.show()
+        }
     }
 
     override fun onResume() {
@@ -82,5 +92,10 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView!!.onLowMemory()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
