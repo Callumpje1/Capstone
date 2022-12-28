@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
-import com.example.localsapp.model.Location
+import com.example.localsapp.model.Place
 
-class HomeAdapter(private val locations: List<Location>) :
+class HomeAdapter(private val locations: List<Place>) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ItemLocationBinding.bind(itemView)

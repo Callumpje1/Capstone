@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.localsapp.databinding.FragmentHomeBinding
-import com.example.localsapp.model.Location
+import com.example.localsapp.model.Place
 
 class HomeFragment : Fragment() {
 
 
-    private val locations = arrayListOf<Location>()
+    private val locations = arrayListOf<Place>()
     private val homeAdapter = HomeAdapter(locations)
 
 
@@ -41,25 +41,22 @@ class HomeFragment : Fragment() {
     }
 
     private fun populateRv() {
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
-        locations.add(Location("hello"))
+        locations.add(Place("hello","Lorem ipsum",null))
+        locations.add(Place("hello","Lorem ipsum",null))
+        locations.add(Place("hello","Lorem ipsum",null))
+        locations.add(Place("hello","Lorem ipsum",null))
+        locations.add(Place("hello","Lorem ipsum",null))
 
         homeAdapter.notifyDataSetChanged()
     }
 
     private fun initViews() {
         binding.rvCafes.layoutManager =
-            LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.rvCafes.adapter = homeAdapter
 
         binding.rvRestaurants.layoutManager =
-            LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.rvRestaurants.adapter = homeAdapter
     }
 

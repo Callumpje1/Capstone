@@ -1,24 +1,22 @@
 package com.example.localsapp.ui.spots
 
 import android.Manifest
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentSpotsBinding
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
 
@@ -35,17 +33,26 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val v: View = inflater.inflate(R.layout.fragment_spots, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_spots, container, false)
         // Gets the MapView from the XML layout and creates it
-        mapView = v.findViewById<View>(R.id.mapview) as MapView
+        mapView = view.findViewById<View>(R.id.mapview) as MapView
         mapView!!.onCreate(savedInstanceState)
-        mapView!!.getMapAsync(this);
+        mapView!!.getMapAsync(this)
 
-        return v
+        return view
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+
+        val sydney = LatLng(52.2, 4.3)
+        map!!.addMarker(
+            MarkerOptions().position(sydney)
+                .title("Marker in Sydney") // below line is use to add custom marker on our map.
+        )
+        map!!.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+
         map!!.uiSettings.isMyLocationButtonEnabled = true
         if (context?.let {
                 ActivityCompat.checkSelfPermission(
@@ -61,17 +68,7 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         ) {
             return
         }
-
-        showDialog()
         map!!.isMyLocationEnabled = true
-    }
-
-    private fun showDialog() {
-        binding.btnAdd.setOnClickListener {
-            val dialog = Dialog(requireContext())
-            dialog.setContentView(R.layout.add_location_dialog)
-            dialog.show()
-        }
     }
 
     override fun onResume() {
