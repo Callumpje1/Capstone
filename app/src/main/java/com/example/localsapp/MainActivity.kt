@@ -3,6 +3,7 @@ package com.example.localsapp
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.media.AudioManager.AudioPlaybackCallback
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,11 +15,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.databinding.ActivityMainBinding
+import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -45,18 +49,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
-
-        // Set the fields to specify which types of place data to
-        // return after the user has made a selection.
-        val fields = listOf(Place.Field.ID, Place.Field.NAME)
-
-        // Start the autocomplete intent.
-        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-            .build(this)
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
-
-
-        Log.i("location", fields.toString())
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -91,6 +83,8 @@ class MainActivity : AppCompatActivity() {
         val dialogLayout = layoutInflater.inflate(R.layout.add_location_dialog, null)
         val builder = android.app.AlertDialog.Builder(this).setView(dialogLayout).show()
 
+        setupPlacesAutoComplete()
+
         dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
            Toast.makeText(applicationContext,"Location added",Toast.LENGTH_SHORT).show()
             builder.hide()
@@ -99,5 +93,32 @@ class MainActivity : AppCompatActivity() {
             builder.hide()
         }
 
+    }
+
+    private fun setupPlacesAutoComplete(){
+
+        var placeFields = mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+        Places.initialize(applicationContext, getString(R.string.api_key))
+
+        val placesClient = Places.createClient(applicationContext)
+
+        val autoCompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as? AutocompleteSupportFragment
+
+        autoCompleteFragment?.setPlaceFields(placeFields)
+
+        autoCompleteFragment?.setOnPlaceSelectedListener(object : PlaceSelectionListener{
+            override fun onPlaceSelected(place: Place) {
+                Toast.makeText(applicationContext, ""+place.address, Toast.LENGTH_SHORT).show()
+                Log.i("Location", place.id.toString()+place.name+place.address)
+
+            }
+
+            override fun onError(status: Status) {
+                Toast.makeText(applicationContext, ""+status.statusMessage, Toast.LENGTH_SHORT).show()
+                Log.i("Location", status.statusMessage.toString())
+            }
+
+        })
     }
 }
