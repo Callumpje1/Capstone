@@ -3,7 +3,6 @@ package com.example.localsapp
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.media.AudioManager.AudioPlaybackCallback
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,13 +17,13 @@ import com.example.localsapp.databinding.ActivityMainBinding
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,6 +48,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
+
+        FirebaseFirestore.setLoggingEnabled(true)
+        FirebaseApp.initializeApp(this)
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
