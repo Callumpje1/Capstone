@@ -29,6 +29,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
 
+    hallo
+
     private var _binding: FragmentSpotsBinding? = null
 
     private val binding get() = _binding!!
