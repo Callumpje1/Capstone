@@ -16,7 +16,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val placeRepository: PlaceRepository = PlaceRepository()
 
-    val places: LiveData<List<Place>> = placeRepository.places
+    val places: LiveData<MutableList<Place>> = placeRepository.places
 
     val createSuccess: LiveData<Boolean> = placeRepository.createSuccess
 
@@ -38,9 +38,9 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addPlace(title: String?, address: String?, id: String?) {
+    fun addPlace(title: String?, address: String?, imageUrl: String?, id: String?) {
         // persist data to firestore
-        val place = Place(title ?: "Name", address ?: "Address", id)
+        val place = Place(title ?: "Name", address ?: "Address",imageUrl ?: "ImageUrl", id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

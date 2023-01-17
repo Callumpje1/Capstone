@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         spotsViewModel.getAllPlaces()
 
         FirebaseFirestore.setLoggingEnabled(true)
-//        FirebaseApp.initializeApp(this)
 
         if (!Places.isInitialized()) {
             Places.initialize(this, getString(R.string.api_key))

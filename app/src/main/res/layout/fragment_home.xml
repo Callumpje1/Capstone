@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/iv_logo"
         android:layout_width="150dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:contentDescription="@string/logo"
         android:src="@drawable/locals_logo"
         app:layout_constraintBottom_toTopOf="@+id/tv_restaurant"
@@ -22,7 +22,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/tv_restaurant_title"
         android:textSize="20sp"
@@ -36,6 +35,7 @@
         android:id="@+id/rv_restaurants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/tv_cafes"
         app:layout_constraintTop_toBottomOf="@+id/tv_restaurant"
         tools:layout_editor_absoluteX="0dp" />
@@ -45,7 +45,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/tv_cafe_title"
         android:textSize="20sp"

@@ -2,6 +2,7 @@ package com.example.localsapp.ui.spots
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import org.json.JSONObject
 
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
@@ -41,14 +43,15 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        val view: View = inflater.inflate(R.layout.fragment_spots, container, false)
+    ): View? {
         _binding = FragmentSpotsBinding.inflate(inflater, container, false)
-
+        val view = inflater.inflate(R.layout.fragment_spots, container, false)
+        _binding!!.root.addView(view)
         // Gets the MapView from the XML layout and creates it
-        mapView = view.findViewById<View>(R.id.mapview) as MapView
+        mapView = view?.findViewById<View>(R.id.mapview) as MapView
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
+
 
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
@@ -78,17 +81,34 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS))
+        autocompleteFragment.setPlaceFields(
+            listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.PHOTO_METADATAS,
+            )
+        )
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 Log.i("ContentValues", place.toString() ?: "no address")
-                spotsViewModel.addPlace(place.name, place.address, place.id)
+
+                val metaData = place.photoMetadatas?.get(0).toString()
+                spotsViewModel.addPlace(
+                    place.name,
+                    place.address,
+                    metaData.substring(metaData.indexOf("photoReference="), metaData.indexOf("}"))
+                        .replace("photoReference=", ""),
+                    place.id,
+                )
             }
 
             override fun onError(status: Status) {
-                Toast.makeText(requireContext(),status.toString(),Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Location could not be added", Toast.LENGTH_SHORT)
+                    .show()
+                Log.i(TAG, status.statusMessage.toString())
             }
         })
 
@@ -103,8 +123,8 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
             MarkerOptions().position(sydney)
                 .title("Marker in Sydney") // below line is use to add custom marker on our map.
         )
-        map!!.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
+        map!!.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
         map!!.uiSettings.isMyLocationButtonEnabled = true
         if (context?.let {

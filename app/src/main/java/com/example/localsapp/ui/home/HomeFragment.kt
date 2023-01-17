@@ -17,11 +17,6 @@ import com.example.localsapp.ui.spots.SpotsViewModel
 
 class HomeFragment : Fragment() {
 
-    companion object {
-        const val IMAGE_URL =
-            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s"
-    }
-
     private val spotsViewModel: SpotsViewModel by activityViewModels()
 
     private val places = arrayListOf<Place>()
@@ -68,7 +63,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun onPlaceClick(place: Place) {
-        Log.i(TAG, "$place")
+        Log.i(TAG, place.toString())
     }
 
     override fun onDestroyView() {

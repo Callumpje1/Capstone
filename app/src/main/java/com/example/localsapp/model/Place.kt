@@ -6,8 +6,10 @@ data class Place(
 
     val address:String?,
 
+    val imageUrl:String?,
+
     var id: String?
 
 ) {
-    constructor(): this(null, null, null)
+    constructor(): this(null, null,null, null)
 }
