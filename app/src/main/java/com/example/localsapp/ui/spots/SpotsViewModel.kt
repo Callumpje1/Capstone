@@ -25,7 +25,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     val errorText: LiveData<String>
         get() = _errorText
 
-    fun getPlaces() {
+    fun getAllPlaces() {
         viewModelScope.launch {
             try {
                 placeRepository.getPlaces()

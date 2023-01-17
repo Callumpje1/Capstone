@@ -18,14 +18,15 @@ import com.example.localsapp.ui.spots.SpotsViewModel
 class HomeFragment : Fragment() {
 
     companion object {
-        const val IMAGE_URL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s"
+        const val IMAGE_URL =
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s"
     }
 
     private val spotsViewModel: SpotsViewModel by activityViewModels()
 
-    private val locations = arrayListOf<Place>()
+    private val places = arrayListOf<Place>()
 
-    private val homeAdapter = HomeAdapter(locations)
+    private val homeAdapter = HomeAdapter(places) { place: Place -> onPlaceClick(place) }
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -37,16 +38,17 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         observePlaces(viewLifecycleOwner)
+
         return binding.root
     }
 
     private fun observePlaces(viewLifeCycleOwner: LifecycleOwner) {
-        spotsViewModel.getPlaces()
-
         spotsViewModel.places.observe(viewLifeCycleOwner) { place ->
-            Log.i(TAG, "$place")
+            places.clear()
+            places.addAll(place)
+            Log.i(TAG, places.toString())
+            homeAdapter.notifyDataSetChanged()
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,6 +65,10 @@ class HomeFragment : Fragment() {
         binding.rvRestaurants.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.rvRestaurants.adapter = homeAdapter
+    }
+
+    private fun onPlaceClick(place: Place) {
+        Log.i(TAG, "$place")
     }
 
     override fun onDestroyView() {

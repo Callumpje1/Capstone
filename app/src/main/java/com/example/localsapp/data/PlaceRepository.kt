@@ -33,7 +33,6 @@ class PlaceRepository {
                     .get().addOnSuccessListener {
                         val list = mutableListOf<Place>()
                         for (document in it) {
-                            Log.i("ContentValues", document.toString())
                             list.add(document.toObject(Place::class.java))
                         }
 
