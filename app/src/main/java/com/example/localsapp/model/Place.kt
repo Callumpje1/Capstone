@@ -2,7 +2,7 @@ package com.example.localsapp.model
 
 data class Place(
 
-    val name: String?,
+    val title: String?,
 
     val address:String?,
 

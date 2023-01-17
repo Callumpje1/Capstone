@@ -39,7 +39,6 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
     private val spotsViewModel: SpotsViewModel by activityViewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -85,12 +84,10 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 spotsViewModel.addPlace(place.name, place.address, place.id)
-                Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
             }
 
             override fun onError(status: Status) {
-                // TODO: Handle the error.
-                Log.i(ContentValues.TAG, "An error occurred: $status")
+                Toast.makeText(requireContext(),status.toString(),Toast.LENGTH_SHORT).show()
             }
         })
 

@@ -6,6 +6,7 @@ import com.example.localsapp.model.Place
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
+import java.util.UUID
 
 class PlaceRepository {
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -31,11 +32,11 @@ class PlaceRepository {
                     .get()
                     .await()
 
-                val title = data.getString("Title")!!
-                val address = data.getString("Address")!!
-                val id = data.getString("Id")!!
+                val name = data.getString("name")!!
+                val address = data.getString("address")!!
+                val id = data.getString("id")!!
 
-                _place.value = Place(title, address, id)
+                _place.value = Place(name, address, id)
             }
         } catch (e: Exception) {
             throw PlaceRetrievalError("Retrieval-firebase-task was unsuccessful")
@@ -47,9 +48,8 @@ class PlaceRepository {
         try {
             //firestore has support for coroutines via the extra dependency we've added :)
             withTimeout(5_000) {
-                placeDocument
-                    .set(place)
-                    .await()
+                firestore.collection("Places").document(place.id ?: UUID.randomUUID().toString())
+                    .set(place).await()
 
                 _createSuccess.value = true
             }

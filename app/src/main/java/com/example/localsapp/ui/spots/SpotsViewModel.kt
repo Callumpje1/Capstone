@@ -38,9 +38,9 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addPlace(title: String, address: String, id: String) {
+    fun addPlace(title: String?, address: String?, id: String?) {
         // persist data to firestore
-        val place = Place(title, address, id)
+        val place = Place(title  ?: "Name", address ?: "Address", id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)
