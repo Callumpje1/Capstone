@@ -8,12 +8,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.databinding.ActivityMainBinding
+import com.example.localsapp.ui.spots.SpotsViewModel
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val AUTOCOMPLETE_REQUEST_CODE = 1
 
     private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,77 +53,40 @@ class MainActivity : AppCompatActivity() {
         )
 
         FirebaseFirestore.setLoggingEnabled(true)
-        FirebaseApp.initializeApp(this)
+//        FirebaseApp.initializeApp(this)
+
+        if(!Places.isInitialized()){
+            Places.initialize(this,getString(R.string.api_key))
+        }
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    data?.let {
-                        val place = Autocomplete.getPlaceFromIntent(data)
-                        Log.i(TAG, "Place: ${place.name}, ${place.id}")
-                    }
-                }
-                AutocompleteActivity.RESULT_ERROR -> {
-                    // TODO: Handle the error.
-                    data?.let {
-                        val status = Autocomplete.getStatusFromIntent(data)
-                        Log.i(TAG, status.statusMessage ?: "")
-                    }
-                }
-                Activity.RESULT_CANCELED -> {
-                    // The user canceled the operation.
-                }
-            }
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+//            when (resultCode) {
+//                Activity.RESULT_OK -> {
+//                    data?.let {
+//                        val place = Autocomplete.getPlaceFromIntent(data)
+//                        Log.i(TAG, "Place: ${place.name}, ${place.id}")
+//                    }
+//                }
+//                AutocompleteActivity.RESULT_ERROR -> {
+//                    // TODO: Handle the error.
+//                    data?.let {
+//                        val status = Autocomplete.getStatusFromIntent(data)
+//                        Log.i(TAG, status.statusMessage ?: "")
+//                    }
+//                }
+//                Activity.RESULT_CANCELED -> {
+//                    // The user canceled the operation.
+//                }
+//            }
+//            return
+//        }
+//        super.onActivityResult(requestCode, resultCode, data)
+//    }
 
-    fun addButton(view: View) {
-        val dialogLayout = layoutInflater.inflate(R.layout.add_location_dialog, null)
-        val builder = android.app.AlertDialog.Builder(this).setView(dialogLayout).show()
 
-        setupPlacesAutoComplete()
-
-        dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
-           Toast.makeText(applicationContext,"Location added",Toast.LENGTH_SHORT).show()
-            builder.hide()
-        }
-        dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
-            builder.hide()
-        }
-
-    }
-
-    private fun setupPlacesAutoComplete(){
-
-        var placeFields = mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
-        Places.initialize(applicationContext, getString(R.string.api_key))
-
-        val placesClient = Places.createClient(applicationContext)
-
-        val autoCompleteFragment =
-            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as? AutocompleteSupportFragment
-
-        autoCompleteFragment?.setPlaceFields(placeFields)
-
-        autoCompleteFragment?.setOnPlaceSelectedListener(object : PlaceSelectionListener{
-            override fun onPlaceSelected(place: Place) {
-                Toast.makeText(applicationContext, ""+place.address, Toast.LENGTH_SHORT).show()
-                Log.i("Location", place.id.toString()+place.name+place.address)
-
-            }
-
-            override fun onError(status: Status) {
-                Toast.makeText(applicationContext, ""+status.statusMessage, Toast.LENGTH_SHORT).show()
-                Log.i("Location", status.statusMessage.toString())
-            }
-
-        })
-    }
 }

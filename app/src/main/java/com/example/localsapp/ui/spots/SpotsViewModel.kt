@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "FIRESTORE"
+
     private val placeRepository: PlaceRepository = PlaceRepository()
 
     val place: LiveData<Place> = placeRepository.place
@@ -20,6 +21,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     val createSuccess: LiveData<Boolean> = placeRepository.createSuccess
 
     private val _errorText: MutableLiveData<String> = MutableLiveData()
+
     val errorText: LiveData<String>
         get() = _errorText
 
@@ -36,9 +38,9 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addPlace(title:String,description:String,image:String,latitude:Double,longitude:Double,id:Long) {
+    fun addPlace(title: String, address: String, id: String) {
         // persist data to firestore
-        val place = Place(title,description,image,latitude,longitude,id)
+        val place = Place(title, address, id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

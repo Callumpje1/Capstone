@@ -9,7 +9,7 @@ import kotlinx.coroutines.withTimeout
 
 class PlaceRepository {
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var quizDocument =
+    private var placeDocument =
         firestore.collection("Places").document("Place")
 
     private val _place: MutableLiveData<Place> = MutableLiveData()
@@ -27,18 +27,15 @@ class PlaceRepository {
         try {
             //firestore has support for coroutines via the extra dependency we've added :)
             withTimeout(5_000) {
-                val data = quizDocument
+                val data = placeDocument
                     .get()
                     .await()
 
-                val title = data.getString("Title").toString()
-                val description = data.getString("Description").toString()
-                val image = data.getString("Image").toString()
-                val latitude = data.getDouble("Latitude")!!
-                val longitude = data.getDouble("Longitude")!!
-                val id = data.getLong("Id")!!
+                val title = data.getString("Title")!!
+                val address = data.getString("Address")!!
+                val id = data.getString("Id")!!
 
-                _place.value = Place(title,description,image,latitude,longitude,id)
+                _place.value = Place(title, address, id)
             }
         } catch (e: Exception) {
             throw PlaceRetrievalError("Retrieval-firebase-task was unsuccessful")
@@ -50,7 +47,7 @@ class PlaceRepository {
         try {
             //firestore has support for coroutines via the extra dependency we've added :)
             withTimeout(5_000) {
-                quizDocument
+                placeDocument
                     .set(place)
                     .await()
 

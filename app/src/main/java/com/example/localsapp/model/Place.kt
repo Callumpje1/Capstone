@@ -1,17 +1,13 @@
 package com.example.localsapp.model
 
+import com.google.android.gms.maps.model.LatLng
+
 data class Place(
 
     val placeTitle: String,
 
-    val placeDescription: String,
+    val address:String,
 
-    val placeImage: String,
-
-    val latitude: Double,
-
-    val longitude: Double,
-
-    var id: Long? = null
+    var id: String
 
 )

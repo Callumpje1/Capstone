@@ -1,21 +1,30 @@
 package com.example.localsapp.ui.spots
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentSpotsBinding
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
@@ -28,6 +37,9 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
     private var map: GoogleMap? = null
 
+    private val spotsViewModel: SpotsViewModel by activityViewModels()
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,7 +51,52 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
 
+        binding.btnAdd.setOnClickListener {
+            openAutoCompleteDialog()
+        }
+
         return view
+    }
+
+    fun openAutoCompleteDialog() {
+        val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
+        val builder = android.app.AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
+
+        setupPlacesAutoComplete()
+
+        dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
+            Toast.makeText(requireContext(), "Location added", Toast.LENGTH_SHORT).show()
+            builder.hide()
+        }
+        dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            builder.hide()
+        }
+
+    }
+
+    private fun setupPlacesAutoComplete() {
+        // Initialize the AutocompleteSupportFragment.
+        val autocompleteFragment =
+            childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
+                    as AutocompleteSupportFragment
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                spotsViewModel.addPlace(place.name, place.address.toString(), place.id)
+                Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
+            }
+
+            override fun onError(status: Status) {
+                // TODO: Handle the error.
+                Log.i(ContentValues.TAG, "An error occurred: $status")
+            }
+        })
+
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

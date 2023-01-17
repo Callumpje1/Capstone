@@ -35,19 +35,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        populateRv()
-
         initViews()
-    }
-
-    private fun populateRv() {
-        locations.add(Place("hello","Lorem ipsum",null))
-        locations.add(Place("hello","Lorem ipsum",null))
-        locations.add(Place("hello","Lorem ipsum",null))
-        locations.add(Place("hello","Lorem ipsum",null))
-        locations.add(Place("hello","Lorem ipsum",null))
-
-        homeAdapter.notifyDataSetChanged()
     }
 
     private fun initViews() {
