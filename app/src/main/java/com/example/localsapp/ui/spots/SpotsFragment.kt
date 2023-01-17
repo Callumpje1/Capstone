@@ -41,11 +41,11 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_spots, container, false)
+        _binding = FragmentSpotsBinding.inflate(inflater, container, false)
+
         // Gets the MapView from the XML layout and creates it
         mapView = view.findViewById<View>(R.id.mapview) as MapView
         mapView!!.onCreate(savedInstanceState)
@@ -54,11 +54,10 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
         }
-
-        return view
+        return binding.root
     }
 
-    fun openAutoCompleteDialog() {
+    private fun openAutoCompleteDialog() {
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
         val builder = android.app.AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
 
@@ -77,8 +76,7 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
     private fun setupPlacesAutoComplete() {
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment =
-            childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
-                    as AutocompleteSupportFragment
+            childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
@@ -86,7 +84,7 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                spotsViewModel.addPlace(place.name, place.address.toString(), place.id)
+                spotsViewModel.addPlace(place.name, place.address, place.id)
                 Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
             }
 
@@ -113,16 +111,13 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         map!!.uiSettings.isMyLocationButtonEnabled = true
         if (context?.let {
                 ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    it, Manifest.permission.ACCESS_FINE_LOCATION
                 )
             } != PackageManager.PERMISSION_GRANTED && context?.let {
                 ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    it, Manifest.permission.ACCESS_COARSE_LOCATION
                 )
-            } != PackageManager.PERMISSION_GRANTED
-        ) {
+            } != PackageManager.PERMISSION_GRANTED) {
             return
         }
         map!!.isMyLocationEnabled = true
