@@ -16,7 +16,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val placeRepository: PlaceRepository = PlaceRepository()
 
-    val place: LiveData<Place> = placeRepository.place
+    val places: LiveData<List<Place>> = placeRepository.places
 
     val createSuccess: LiveData<Boolean> = placeRepository.createSuccess
 
@@ -25,10 +25,10 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     val errorText: LiveData<String>
         get() = _errorText
 
-    fun getPlace() {
+    fun getPlaces() {
         viewModelScope.launch {
             try {
-                placeRepository.getPlace()
+                placeRepository.getPlaces()
             } catch (ex: PlaceRepository.PlaceRetrievalError) {
                 val errorMsg = "Something went wrong while retrieving this place.\n" +
                         "It could be that you still need to install your own google-services.json file from Firestore."
@@ -40,7 +40,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addPlace(title: String?, address: String?, id: String?) {
         // persist data to firestore
-        val place = Place(title  ?: "Name", address ?: "Address", id)
+        val place = Place(title ?: "Name", address ?: "Address", id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

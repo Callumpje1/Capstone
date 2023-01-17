@@ -8,4 +8,6 @@ data class Place(
 
     var id: String?
 
-)
+) {
+    constructor(): this(null, null, null)
+}

@@ -12,7 +12,6 @@ class HomeAdapter(private val locations: List<Place>) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ItemLocationBinding.bind(itemView)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

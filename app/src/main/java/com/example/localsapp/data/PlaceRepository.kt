@@ -1,5 +1,6 @@
 package com.example.localsapp.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.localsapp.model.Place
@@ -13,10 +14,10 @@ class PlaceRepository {
     private var placeDocument =
         firestore.collection("Places").document("Place")
 
-    private val _place: MutableLiveData<Place> = MutableLiveData()
+    private val _places: MutableLiveData<List<Place>> = MutableLiveData()
 
-    val place: LiveData<Place>
-        get() = _place
+    val places: LiveData<List<Place>>
+        get() = _places
 
     //the CreateQuizFragment can use this to see if creation succeeded
     private val _createSuccess: MutableLiveData<Boolean> = MutableLiveData()
@@ -24,19 +25,20 @@ class PlaceRepository {
     val createSuccess: LiveData<Boolean>
         get() = _createSuccess
 
-    suspend fun getPlace() {
+    suspend fun getPlaces() {
         try {
             //firestore has support for coroutines via the extra dependency we've added :)
             withTimeout(5_000) {
-                val data = placeDocument
-                    .get()
-                    .await()
+                val data = firestore.collection("Places")
+                    .get().addOnSuccessListener {
+                        val list = mutableListOf<Place>()
+                        for (document in it) {
+                            Log.i("ContentValues", document.toString())
+                            list.add(document.toObject(Place::class.java))
+                        }
 
-                val name = data.getString("name")!!
-                val address = data.getString("address")!!
-                val id = data.getString("id")!!
-
-                _place.value = Place(name, address, id)
+                        _places.value = list
+                    }
             }
         } catch (e: Exception) {
             throw PlaceRetrievalError("Retrieval-firebase-task was unsuccessful")

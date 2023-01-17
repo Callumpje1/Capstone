@@ -78,11 +78,12 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS))
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
+                Log.i("ContentValues", place.toString() ?: "no address")
                 spotsViewModel.addPlace(place.name, place.address, place.id)
             }
 
