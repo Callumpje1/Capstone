@@ -2,23 +2,28 @@ package com.example.localsapp.ui.spots
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.R
-import com.example.localsapp.databinding.ActivityMainBinding
 import com.example.localsapp.databinding.ActivitySpotsBinding
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,9 +35,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private val spotsViewModel: SpotsViewModel by viewModels()
 
     private lateinit var binding: ActivitySpotsBinding
 
@@ -67,6 +76,10 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         setContentView(R.layout.activity_spots)
 
+        binding.btnAdd.setOnClickListener {
+            openAutoCompleteDialog()
+        }
+
         Places.initialize(applicationContext, getString(R.string.api_key))
         placesClient = Places.createClient(this)
 
@@ -87,9 +100,60 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
         navView.setupWithNavController(navController)
     }
 
-    /**
-     * Saves the state of the map when the activity is paused.
-     */
+
+    private fun openAutoCompleteDialog() {
+        val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
+        val builder =
+            android.app.AlertDialog.Builder(applicationContext).setView(dialogLayout).show()
+
+        setupPlacesAutoComplete()
+
+        dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
+            Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
+            builder.hide()
+        }
+        dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            builder.hide()
+        }
+    }
+
+    private fun setupPlacesAutoComplete() {
+        val autocompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+
+        autocompleteFragment.setPlaceFields(
+            listOf(
+                com.google.android.libraries.places.api.model.Place.Field.ID,
+                com.google.android.libraries.places.api.model.Place.Field.NAME,
+                com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
+                com.google.android.libraries.places.api.model.Place.Field.PHOTO_METADATAS,
+            )
+        )
+
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: com.google.android.libraries.places.api.model.Place) {
+                spotsViewModel.addPlace(
+                    place.name,
+                    place.address,
+                    place.photoMetadatas?.get(0).toString(),
+                    false,
+                    place.id,
+                )
+            }
+
+            override fun onError(status: Status) {
+                Toast.makeText(
+                    applicationContext,
+                    "Location could not be added",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.i(ContentValues.TAG, status.statusMessage.toString())
+            }
+        })
+        autocompleteFragment.onStop()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         map?.let { map ->
             outState.putParcelable(KEY_CAMERA_POSITION, map.cameraPosition)
