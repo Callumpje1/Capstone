@@ -16,8 +16,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentSpotsBinding
@@ -37,6 +35,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
 
+    private lateinit var locationResult: LocationResult
+
     private lateinit var locationRequest: LocationRequest
 
     private var _binding: FragmentSpotsBinding? = null
@@ -47,11 +47,13 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
     private var map: GoogleMap? = null
 
-    private var mLastLocation: Location? = null
+    private var lastLocation: Location? = null
 
-    private var mCurrLocationMarker: Marker? = null
+    private var locationCallback: LocationCallback? = null
 
-    private var mFusedLocationClient: FusedLocationProviderClient? = null
+    private var currLocationMarker: Marker? = null
+
+    private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private val spotsViewModel: SpotsViewModel by activityViewModels()
 
@@ -66,17 +68,15 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
 
-
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
         }
-
         return binding.root
     }
 
     private fun openAutoCompleteDialog() {
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
-        val builder = android.app.AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
+        val builder = AlertDialog.Builder(requireContext()).setView(dialogLayout).show()
 
         setupPlacesAutoComplete()
 
@@ -124,46 +124,58 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        locationResult = LocationResult()
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            mFusedLocationClient?.requestLocationUpdates(
-                locationRequest, mLocationCallback, Looper.myLooper()
+            fusedLocationClient?.requestLocationUpdates(
+                locationRequest, locationCallback!!, Looper.myLooper()
             )
             map!!.isMyLocationEnabled = true
         } else {
             checkLocationPermission()
         }
+
+        val locationList = locationResult.locations
+        if (locationList.isNotEmpty()) {
+            val location = locationList.last()
+            lastLocation = location
+            if (currLocationMarker != null) {
+                currLocationMarker?.remove()
+            }
+            val latLng = LatLng(location.latitude, location.longitude)
+            val markerOptions = MarkerOptions()
+            markerOptions.position(latLng)
+            markerOptions.title("Current Position")
+            currLocationMarker = map!!.addMarker(markerOptions)
+
+            map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11.0F))
+        }
+
     }
 
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    requireActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Location Permission Needed")
+                AlertDialog.Builder(requireContext()).setTitle("Location Permission Needed")
                     .setMessage("This app needs the Location permission, please accept to use location functionality")
                     .setPositiveButton(
                         "OK"
                     ) { _, _ ->
-                        //Prompt the user once explanation has been shown
                         ActivityCompat.requestPermissions(
                             requireActivity(),
                             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                             MY_PERMISSIONS_REQUEST_LOCATION
                         )
-                    }
-                    .create()
-                    .show()
+                    }.create().show()
 
             } else {
                 ActivityCompat.requestPermissions(
@@ -175,47 +187,38 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private var mLocationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            val locationList = locationResult.locations
-            if (locationList.isNotEmpty()) {
-                //The last location in the list is the newest
-                val location = locationList.last()
-                Log.i("MapsActivity", "Location: " + location.latitude + " " + location.longitude)
-                mLastLocation = location
-                if (mCurrLocationMarker != null) {
-                    mCurrLocationMarker?.remove()
-                }
-
-                val latLng = LatLng(location.latitude, location.longitude)
-                val markerOptions = MarkerOptions()
-                markerOptions.position(latLng)
-                markerOptions.title("Current Position")
-                mCurrLocationMarker = map!!.addMarker(markerOptions)
-
-                map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11.0F))
-            }
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
         }
+        fusedLocationClient?.requestLocationUpdates(
+            locationRequest, locationCallback!!, null /* Looper */
+        )
     }
 
-    override fun onResume() {
-        mapView!!.onResume()
-        super.onResume()
+    // stop location updates
+    private fun stopLocationUpdates() {
+        fusedLocationClient?.removeLocationUpdates(locationCallback!!)
     }
 
     override fun onPause() {
         super.onPause()
-        mapView!!.onPause()
+        stopLocationUpdates()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startLocationUpdates()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mapView!!.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView!!.onLowMemory()
     }
 
     companion object {
