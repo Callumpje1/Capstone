@@ -1,5 +1,7 @@
 package com.example.localsapp.data
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.localsapp.model.Place
@@ -37,10 +39,11 @@ class PlaceRepository {
     fun getFavourites() {
         try {
             collection
-                .whereEqualTo("favourite", "true")
+                .whereEqualTo("favourite", true)
                 .get().addOnSuccessListener {
                     val list = mutableListOf<Place>()
                     for (document in it) {
+                        Log.i(TAG, "$document")
                         list.add(document.toObject(Place::class.java))
                     }
                     _places.value = list

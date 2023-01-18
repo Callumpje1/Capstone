@@ -39,10 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseFirestore.setLoggingEnabled(true)
 
-        if (!Places.isInitialized()) {
-            Places.initialize(this, getString(R.string.api_key))
-        }
-
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
