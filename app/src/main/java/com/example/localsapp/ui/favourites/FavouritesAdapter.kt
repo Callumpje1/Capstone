@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
 import com.example.localsapp.model.Place
-import java.lang.reflect.Array.set
 
 class FavouritesAdapter(
     private val locations: List<Place>,
@@ -36,11 +35,19 @@ class FavouritesAdapter(
             binding.ivFavourite.setOnClickListener {
                 place.favourite = !place.favourite!!
                 updateFavourite(place.favourite!!, place.id!!)
-                Toast.makeText(this,"Changed from favourites",Toast.LENGTH_SHORT)
-                if (place.favourite!!) binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24) else binding.ivFavourite.setImageResource(
-                    R.drawable.ic_baseline_favorite_border_24
-                )
+                if (place.favourite!!) {
+                    Toast.makeText(it.context, "Added to favourites", Toast.LENGTH_SHORT)
+                        .show()
+                    binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24)
+                } else {
+                    Toast.makeText(it.context, "Removed from favourites", Toast.LENGTH_SHORT)
+                        .show()
+                    binding.ivFavourite.setImageResource(
+                        R.drawable.ic_baseline_favorite_border_24
+                    )
+                }
             }
+
             if (place.favourite!!) binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24) else binding.ivFavourite.setImageResource(
                 R.drawable.ic_baseline_favorite_border_24
             )
@@ -64,6 +71,6 @@ class FavouritesAdapter(
 
     companion object {
         const val IMAGE_URL =
-            "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&sensor=false&maxheight=300&maxwidth=600&key=%s"
+            "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&sensor=false&maxheight=1000&maxwidth=1000&key=%s"
     }
 }
