@@ -14,4 +14,5 @@
     <string name="add_place">add</string>
     <string name="tv_location_description">Location Description</string>
     <string name="api_key">AIzaSyCNr9gOl6V7Wo7x84ULrBy3s_hDjE1uwk0</string>
+    <string name="default_marker">Default Location</string>
 </resources>

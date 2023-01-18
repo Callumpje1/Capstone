@@ -10,10 +10,10 @@
         android:name="com.example.localsapp.ui.home.HomeFragment"
         tools:layout="@layout/fragment_home" />
 
-    <fragment
+    <activity
         android:id="@+id/navigation_spots"
-        android:name="com.example.localsapp.ui.spots.SpotsFragment"
-        tools:layout="@layout/fragment_spots" />
+        android:name="com.example.localsapp.ui.spots.SpotsActivity"
+        tools:layout="@layout/activity_spots" />
 
     <fragment
         android:id="@+id/navigation_favourites"
