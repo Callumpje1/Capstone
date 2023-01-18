@@ -1,7 +1,6 @@
 package com.example.localsapp.ui.spots
 
 import android.Manifest
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,6 +12,8 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentSpotsBinding
@@ -26,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import org.json.JSONObject
 
 
 class SpotsFragment : Fragment(), OnMapReadyCallback {
@@ -56,6 +56,7 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
         }
+
         return binding.root
     }
 
@@ -72,15 +73,12 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             builder.hide()
         }
-
     }
 
     private fun setupPlacesAutoComplete() {
-        // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment =
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
-        // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(
             listOf(
                 Place.Field.ID,
@@ -90,17 +88,13 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
             )
         )
 
-        // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                Log.i("ContentValues", place.toString() ?: "no address")
-
-                val metaData = place.photoMetadatas?.get(0).toString()
                 spotsViewModel.addPlace(
                     place.name,
                     place.address,
-                    metaData.substring(metaData.indexOf("photoReference="), metaData.indexOf("}"))
-                        .replace("photoReference=", ""),
+                    place.photoMetadatas?.get(0).toString(),
+                    false,
                     place.id,
                 )
             }
@@ -111,8 +105,7 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
                 Log.i(TAG, status.statusMessage.toString())
             }
         })
-
-
+        autocompleteFragment.onStop()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -151,8 +144,8 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         mapView!!.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapView!!.onDestroy()
     }
 
@@ -161,8 +154,4 @@ class SpotsFragment : Fragment(), OnMapReadyCallback {
         mapView!!.onLowMemory()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }

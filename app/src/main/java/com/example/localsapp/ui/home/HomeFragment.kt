@@ -41,7 +41,6 @@ class HomeFragment : Fragment() {
         spotsViewModel.places.observe(viewLifeCycleOwner) { place ->
             places.clear()
             places.addAll(place)
-            Log.i(TAG, places.toString())
             homeAdapter.notifyDataSetChanged()
         }
     }
@@ -53,17 +52,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun initViews() {
-        binding.rvCafes.layoutManager =
-            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        binding.rvCafes.adapter = homeAdapter
-
         binding.rvRestaurants.layoutManager =
-            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.rvRestaurants.adapter = homeAdapter
     }
 
     private fun onPlaceClick(place: Place) {
         Log.i(TAG, place.toString())
+    }
+
+    private fun onFavouriteClick(place: Place){
     }
 
     override fun onDestroyView() {

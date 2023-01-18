@@ -4,12 +4,14 @@ data class Place(
 
     val title: String?,
 
-    val address:String?,
+    val address: String?,
 
-    val imageUrl:String?,
+    val imageUrl: String?,
+
+    val favourite: Boolean?,
 
     var id: String?
 
 ) {
-    constructor(): this(null, null,null, null)
+    constructor() : this(null, null, null, null, null)
 }

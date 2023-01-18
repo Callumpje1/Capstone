@@ -38,9 +38,31 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addPlace(title: String?, address: String?, imageUrl: String?, id: String?) {
-        // persist data to firestore
-        val place = Place(title ?: "Name", address ?: "Address",imageUrl ?: "ImageUrl", id)
+    fun updateFavourites(
+        place: Place
+    ){
+        viewModelScope.launch{
+            try {
+                placeRepository.updateFavourites(place)
+            } catch (ex: PlaceRepository.PlaceRetrievalError) {
+                val errorMsg = "Something went wrong while retrieving this place.\n" +
+                        "It could be that you still need to install your own google-services.json file from Firestore."
+                Log.e(TAG, ex.message ?: errorMsg)
+                _errorText.value = errorMsg
+            }
+        }
+    }
+
+
+    fun addPlace(
+        title: String?,
+        address: String?,
+        imageUrl: String?,
+        favourite: Boolean,
+        id: String?
+    ) {
+        val place =
+            Place(title ?: "Name", address ?: "Address", imageUrl ?: "ImageUrl", favourite, id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

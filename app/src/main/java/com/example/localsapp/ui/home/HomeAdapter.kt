@@ -3,22 +3,44 @@ package com.example.localsapp.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
 import com.example.localsapp.model.Place
 
-class HomeAdapter(private val locations: List<Place>, private val clickListener: (Place) -> Unit) :
+
+class HomeAdapter(
+    private val locations: List<Place>,
+    private val clickListener: (Place) -> Unit
+) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ItemLocationBinding.bind(itemView)
-
         fun dataBind(place: Place, clickListener: (Place) -> Unit) {
-            binding.imageView.setImageResource(R.drawable.ic_baseline_favorite_24)
-            binding.imageView2.setImageURI(String.format(IMAGE_URL, place.imageUrl, R.string.api_key).toUri())
-            binding.textView2.text = place.title
-            binding.textView3.text = place.address
+            Glide
+                .with(itemView)
+                .load(
+                    String.format(
+                        IMAGE_URL,
+                        place.imageUrl,
+                        itemView.context.getString(
+                            R.string.api_key
+                        )
+                    )
+                )
+                .into(binding.ivPhoto);
+            binding.tvTitle.text = place.title
+            binding.tvAddress.text = place.address
+            binding.ivFavourite.setOnClickListener {
+                if (it.isSelected) {
+                    Toast.makeText(itemView.context, "hello", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(itemView.context, "doei", Toast.LENGTH_SHORT).show()
+                }
+            }
             binding.cvItem.setOnClickListener { clickListener(place) }
         }
     }
@@ -37,9 +59,9 @@ class HomeAdapter(private val locations: List<Place>, private val clickListener:
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.dataBind(locations[position], clickListener)
     }
-
+    
     companion object {
         const val IMAGE_URL =
-            "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&sensor=false&maxheight=200&maxwidth=200&key=%s"
+            "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&sensor=false&maxheight=300&maxwidth=600&key=%s"
     }
 }

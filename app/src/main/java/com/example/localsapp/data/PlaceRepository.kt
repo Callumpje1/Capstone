@@ -24,7 +24,7 @@ class PlaceRepository {
     val createSuccess: LiveData<Boolean>
         get() = _createSuccess
 
-    suspend fun getPlaces() {
+    fun getPlaces() {
         try {
             firestore.collection("Places")
                 .get().addOnSuccessListener {
@@ -32,7 +32,6 @@ class PlaceRepository {
                     for (document in it) {
                         list.add(document.toObject(Place::class.java))
                     }
-
                     _places.value = list
                 }
         } catch (e: Exception) {
@@ -40,15 +39,22 @@ class PlaceRepository {
         }
     }
 
+    suspend fun updateFavourites(place: Place){
+        try {
+            firestore.collection("Places")
+                .document("Favourites")
+        }catch (e: Exception) {
+            throw PlaceSaveError(e.message.toString(), e)
+        }
+    }
+
     suspend fun addPlace(place: Place) {
         try {
-            withTimeout(5_000) {
-                firestore.collection("Places").document(place.id ?: UUID.randomUUID().toString())
-                    .set(place).await()
+            firestore.collection("Places").document(place.id ?: UUID.randomUUID().toString())
+                .set(place).await()
+            _createSuccess.value = true
+            _places.value?.add(place)
 
-                _createSuccess.value = true
-                _places.value?.add(place)
-            }
 
         } catch (e: Exception) {
             throw PlaceSaveError(e.message.toString(), e)

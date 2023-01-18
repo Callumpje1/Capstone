@@ -8,18 +8,15 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.localsapp.ui.home.HomeFragment"
-        android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_spots"
         android:name="com.example.localsapp.ui.spots.SpotsFragment"
-        android:label="@string/title_spots"
         tools:layout="@layout/fragment_spots" />
 
     <fragment
         android:id="@+id/navigation_favourites"
         android:name="com.example.localsapp.ui.favourites.FavouritesFragment"
-        android:label="@string/title_favourites"
         tools:layout="@layout/fragment_favourites" />
 </navigation>
