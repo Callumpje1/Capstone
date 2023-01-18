@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentHomeBinding
 import com.example.localsapp.model.Place
 import com.example.localsapp.ui.spots.SpotsViewModel

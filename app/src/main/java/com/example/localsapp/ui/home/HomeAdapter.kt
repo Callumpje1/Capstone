@@ -3,16 +3,11 @@ package com.example.localsapp.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
 import com.example.localsapp.model.Place
-import com.example.localsapp.ui.spots.SpotsViewModel
-
 
 class HomeAdapter(
     private val locations: List<Place>,

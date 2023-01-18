@@ -15,4 +15,8 @@
     <string name="tv_location_description">Location Description</string>
     <string name="api_key">AIzaSyCNr9gOl6V7Wo7x84ULrBy3s_hDjE1uwk0</string>
     <string name="default_marker">Default Location</string>
+    <string name="add_location_dialog">Add Location</string>
+    <string name="cancel">cancel</string>
+    <string name="ok">ok</string>
+    <string name="yes">Yes</string>
 </resources>
