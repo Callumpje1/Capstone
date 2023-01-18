@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.localsapp">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -17,6 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LocalsApp"
         tools:targetApi="31">
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -29,6 +31,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -5,11 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
 import com.example.localsapp.model.Place
+import com.example.localsapp.ui.spots.SpotsViewModel
 
 
 class HomeAdapter(
@@ -59,7 +61,7 @@ class HomeAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.dataBind(locations[position], clickListener)
     }
-    
+
     companion object {
         const val IMAGE_URL =
             "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&sensor=false&maxheight=300&maxwidth=600&key=%s"
