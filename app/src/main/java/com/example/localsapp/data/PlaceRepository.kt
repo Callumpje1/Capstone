@@ -1,7 +1,5 @@
 package com.example.localsapp.data
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.localsapp.model.Place
@@ -11,7 +9,6 @@ import java.util.*
 
 class PlaceRepository {
     private var fireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
-
 
     private val _places: MutableLiveData<MutableList<Place>> = MutableLiveData()
 

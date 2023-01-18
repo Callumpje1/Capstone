@@ -1,15 +1,12 @@
 package com.example.localsapp
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.databinding.ActivityMainBinding
-import com.example.localsapp.ui.spots.SpotsViewModel
-import com.google.android.libraries.places.api.Places
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -33,9 +30,9 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        supportActionBar?.setDisplayShowHomeEnabled(true);
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        supportActionBar?.setIcon(R.drawable.locals_logo_white);
+        supportActionBar?.setIcon(R.drawable.locals_logo_white)
 
         FirebaseFirestore.setLoggingEnabled(true)
 

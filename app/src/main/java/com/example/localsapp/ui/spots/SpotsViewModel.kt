@@ -1,7 +1,6 @@
 package com.example.localsapp.ui.spots
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -61,11 +60,10 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         address: String?,
         imageUrl: String?,
         favourite: Boolean,
-        latLng: LatLng?,
         id: String?
     ) {
         val place =
-            Place(title, address, imageUrl.toString(), favourite, latLng, id)
+            Place(title, address, imageUrl.toString(), favourite, id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

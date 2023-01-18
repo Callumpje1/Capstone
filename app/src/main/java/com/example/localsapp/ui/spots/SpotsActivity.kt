@@ -15,11 +15,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.MainActivity
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ActivitySpotsBinding
@@ -83,16 +78,17 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        startActivityForResult(Intent(applicationContext, MainActivity::class.java), 0);
-        return true;
+        startActivityForResult(Intent(applicationContext, MainActivity::class.java), 0)
+        return true
     }
 
     private fun openAutoCompleteDialog() {
+
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
 
-        val builder = AlertDialog.Builder(this).setView(dialogLayout).show()
-
         addPlacesAutoComplete()
+
+        val builder = AlertDialog.Builder(this).setView(dialogLayout).show()
 
         dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
             Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
@@ -101,6 +97,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
         dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             builder.hide()
         }
+
     }
 
     private fun addPlacesAutoComplete() {
@@ -112,8 +109,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
                 Place.Field.ID,
                 Place.Field.NAME,
                 Place.Field.ADDRESS,
-                Place.Field.PHOTO_METADATAS,
-                Place.Field.LAT_LNG
+                Place.Field.PHOTO_METADATAS
             )
         )
 
@@ -126,7 +122,6 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
                     metaData.substring(metaData.indexOf("photoReference="), metaData.indexOf("}"))
                         .replace("photoReference=", ""),
                     false,
-                    place.latLng,
                     place.id,
                 )
             }
@@ -138,8 +133,6 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
                 Log.i(TAG, status.statusMessage.toString())
             }
         })
-
-        autocompleteFragment.onDestroy()
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -238,7 +231,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
     }
 
     override fun onPoiClick(poi: PointOfInterest) {
-        Toast.makeText(applicationContext, poi.name, Toast.LENGTH_LONG).show()
+        Toast.makeText(applicationContext, poi.name, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

@@ -19,4 +19,6 @@
     <string name="cancel">cancel</string>
     <string name="ok">ok</string>
     <string name="yes">Yes</string>
+    <string name="place_image">Place Image</string>
+    <string name="favourite_image">Favourite Image</string>
 </resources>
