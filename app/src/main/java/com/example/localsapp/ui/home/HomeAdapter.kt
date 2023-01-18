@@ -38,9 +38,9 @@ class HomeAdapter(
             binding.tvAddress.text = place.address
             binding.ivFavourite.setOnClickListener {
                 if (it.isSelected) {
-                    Toast.makeText(itemView.context, "hello", Toast.LENGTH_SHORT).show()
+
                 } else {
-                    Toast.makeText(itemView.context, "doei", Toast.LENGTH_SHORT).show()
+
                 }
             }
             binding.cvItem.setOnClickListener { clickListener(place) }

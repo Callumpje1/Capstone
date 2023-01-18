@@ -17,10 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ActivitySpotsBinding
 import com.google.android.gms.common.api.Status
@@ -33,15 +29,19 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val spotsViewModel: SpotsViewModel by viewModels()
+
+    private val places = arrayListOf<com.example.localsapp.model.Place>()
 
     private lateinit var binding: ActivitySpotsBinding
 
@@ -59,45 +59,36 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var lastKnownLocation: Location? = null
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySpotsBinding.inflate(layoutInflater)
 
-        setContentView(binding.root)
-
-        val navView: BottomNavigationView = binding.navView
-
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION)
         }
-        setContentView(R.layout.activity_spots)
+        Places.initialize(applicationContext, getString(R.string.api_key))
+        placesClient = Places.createClient(this)
+
+        map?.setOnPoiClickListener { marker ->
+            Toast.makeText(applicationContext, "Marker Title: ${marker.name}", Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        // Construct a FusedLocationProviderClient.
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+
+        setContentView(binding.root)
 
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
         }
 
-        Places.initialize(applicationContext, getString(R.string.api_key))
-        placesClient = Places.createClient(this)
-
-        // Construct a FusedLocationProviderClient.
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_spots, R.id.navigation_favourites
-            )
-        )
-
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
     }
 
 
@@ -123,31 +114,30 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         autocompleteFragment.setPlaceFields(
             listOf(
-                com.google.android.libraries.places.api.model.Place.Field.ID,
-                com.google.android.libraries.places.api.model.Place.Field.NAME,
-                com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
-                com.google.android.libraries.places.api.model.Place.Field.PHOTO_METADATAS,
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.PHOTO_METADATAS,
+                Place.Field.LAT_LNG
             )
         )
 
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: com.google.android.libraries.places.api.model.Place) {
+            override fun onPlaceSelected(place: Place) {
                 spotsViewModel.addPlace(
                     place.name,
                     place.address,
                     place.photoMetadatas?.get(0).toString(),
                     false,
+                    place.latLng,
                     place.id,
                 )
             }
 
             override fun onError(status: Status) {
                 Toast.makeText(
-                    applicationContext,
-                    "Location could not be added",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                    applicationContext, "Location could not be added", Toast.LENGTH_SHORT
+                ).show()
                 Log.i(ContentValues.TAG, status.statusMessage.toString())
             }
         })
@@ -174,8 +164,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
             @SuppressLint("MissingInflatedId")
             override fun getInfoContents(marker: Marker): View {
                 val infoWindow = layoutInflater.inflate(
-                    R.layout.custom_info_contents,
-                    findViewById<FrameLayout>(R.id.map), false
+                    R.layout.custom_info_contents, findViewById<FrameLayout>(R.id.map), false
                 )
                 val title = infoWindow.findViewById<TextView>(R.id.title)
                 title.text = marker.title
@@ -184,6 +173,8 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
                 return infoWindow
             }
         })
+
+        showPlacesOnMap()
 
         getLocationPermission()
 
@@ -208,8 +199,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
                             map?.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(
                                     LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
+                                        lastKnownLocation!!.latitude, lastKnownLocation!!.longitude
                                     ), DEFAULT_ZOOM.toFloat()
                                 )
                             )
@@ -218,8 +208,9 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
                         map?.moveCamera(
-                            CameraUpdateFactory
-                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat())
+                            CameraUpdateFactory.newLatLngZoom(
+                                defaultLocation, DEFAULT_ZOOM.toFloat()
+                            )
                         )
                         map?.uiSettings?.isMyLocationButtonEnabled = false
                     }
@@ -232,32 +223,27 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
-                this.applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
+                this.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         locationPermissionGranted = false
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
 
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationPermissionGranted = true
                 }
             }
@@ -286,8 +272,43 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun showPlacesOnMap() {
+        if (map == null) {
+            return
+        }
+        if (locationPermissionGranted) {
+            val placeFields = listOf(Place.Field.LAT_LNG, Place.Field.NAME)
+
+            val request = FindCurrentPlaceRequest.newInstance(placeFields)
+
+            val placeResult = placesClient.findCurrentPlace(request)
+
+            placeResult.addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val likelyPlaces = task.result
+
+                    if (likelyPlaces != null && likelyPlaces.placeLikelihoods.size < MAX_ENTRIES) {
+                        likelyPlaces.placeLikelihoods.size
+                    } else {
+                        MAX_ENTRIES
+                    }
+                    for (place in places) {
+                        map?.addMarker(
+                            MarkerOptions().title(place.title)
+                                .position(place.LatLng!!)
+                        )
+                    }
+                } else {
+                    Log.e(TAG, "Exception: %s", task.exception)
+                }
+            }
+        }
+    }
+
     companion object {
         private val TAG = SpotsActivity::class.java.simpleName
+        private const val MAX_ENTRIES = 10
         private const val DEFAULT_ZOOM = 15
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         private const val KEY_CAMERA_POSITION = "camera_position"

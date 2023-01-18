@@ -39,11 +39,13 @@ class PlaceRepository {
         }
     }
 
-    suspend fun updateFavourites(place: Place){
+    suspend fun updateFavourites(place: Place) {
         try {
             firestore.collection("Places")
                 .document("Favourites")
-        }catch (e: Exception) {
+                .set(place.favourite!!).await()
+            _createSuccess.value = true
+        } catch (e: Exception) {
             throw PlaceSaveError(e.message.toString(), e)
         }
     }

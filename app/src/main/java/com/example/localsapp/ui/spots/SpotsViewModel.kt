@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.localsapp.data.PlaceRepository
 import com.example.localsapp.model.Place
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
 class SpotsViewModel(application: Application) : AndroidViewModel(application) {
@@ -39,13 +40,20 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateFavourites(
-        place: Place
-    ){
-        viewModelScope.launch{
+        title: String?,
+        address: String?,
+        imageUrl: String?,
+        favourite: Boolean,
+        latLng: LatLng?,
+        id: String?
+    ) {
+        val place =
+            Place(title, address, imageUrl, favourite, latLng, id)
+        viewModelScope.launch {
             try {
-                placeRepository.updateFavourites(place)
-            } catch (ex: PlaceRepository.PlaceRetrievalError) {
-                val errorMsg = "Something went wrong while retrieving this place.\n" +
+                placeRepository.addPlace(place)
+            } catch (ex: PlaceRepository.PlaceSaveError) {
+                val errorMsg = "Something went wrong while saving this place.\n" +
                         "It could be that you still need to install your own google-services.json file from Firestore."
                 Log.e(TAG, ex.message ?: errorMsg)
                 _errorText.value = errorMsg
@@ -59,10 +67,11 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         address: String?,
         imageUrl: String?,
         favourite: Boolean,
+        latLng: LatLng?,
         id: String?
     ) {
         val place =
-            Place(title ?: "Name", address ?: "Address", imageUrl ?: "ImageUrl", favourite, id)
+            Place(title, address, imageUrl, favourite, latLng, id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)

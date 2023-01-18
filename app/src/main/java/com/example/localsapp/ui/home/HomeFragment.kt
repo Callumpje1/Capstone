@@ -61,9 +61,6 @@ class HomeFragment : Fragment() {
         Log.i(TAG, place.toString())
     }
 
-    private fun onFavouriteClick(place: Place){
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
