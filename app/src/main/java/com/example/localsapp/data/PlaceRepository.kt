@@ -12,7 +12,6 @@ import java.util.*
 class PlaceRepository {
     private var fireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    private val collection = fireStore.collection("Places")
 
     private val _places: MutableLiveData<MutableList<Place>> = MutableLiveData()
 
@@ -23,7 +22,7 @@ class PlaceRepository {
 
     fun getPlaces() {
         try {
-            collection
+            fireStore.collection("Places")
                 .get().addOnSuccessListener {
                     val list = mutableListOf<Place>()
                     for (document in it) {
@@ -38,12 +37,11 @@ class PlaceRepository {
 
     fun getFavourites() {
         try {
-            collection
+            fireStore.collection("Places")
                 .whereEqualTo("favourite", true)
                 .get().addOnSuccessListener {
                     val list = mutableListOf<Place>()
                     for (document in it) {
-                        Log.i(TAG, "$document")
                         list.add(document.toObject(Place::class.java))
                     }
                     _places.value = list
@@ -55,15 +53,11 @@ class PlaceRepository {
 
     suspend fun updateFavourites(favourite: Boolean, id: String) {
         try {
-            collection
+            fireStore.collection("Places")
                 .document(id)
                 .update("favourite", favourite)
                 .await()
             _createSuccess.value = true
-            val place = _places.value?.find {
-                it.id == id
-            }
-            place?.favourite = favourite
 
         } catch (e: Exception) {
             throw PlaceSaveError(e.message.toString(), e)
@@ -72,7 +66,8 @@ class PlaceRepository {
 
     suspend fun addPlace(place: Place) {
         try {
-            collection.document(place.id ?: UUID.randomUUID().toString())
+            fireStore.collection("Places")
+                .document(place.id ?: UUID.randomUUID().toString())
                 .set(place).await()
             _createSuccess.value = true
             _places.value?.add(place)

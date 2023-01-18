@@ -1,8 +1,6 @@
 package com.example.localsapp.ui.favourites
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +19,9 @@ class FavouritesFragment : Fragment() {
 
     private val places = arrayListOf<Place>()
 
-    private val favouritesAdapter = FavouritesAdapter(places) { favourite, id ->
+    private val favouritesAdapter = FavouritesAdapter(places){ favourite, id ->
         spotsViewModel.updateFavourites(favourite, id)
     }
-
     private var _binding: FragmentFavouritesBinding? = null
 
     private val binding get() = _binding!!

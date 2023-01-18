@@ -3,11 +3,13 @@ package com.example.localsapp.ui.favourites
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ItemLocationBinding
 import com.example.localsapp.model.Place
+import java.lang.reflect.Array.set
 
 class FavouritesAdapter(
     private val locations: List<Place>,
@@ -32,14 +34,16 @@ class FavouritesAdapter(
             binding.tvTitle.text = place.title
             binding.tvAddress.text = place.address
             binding.ivFavourite.setOnClickListener {
-                if (place.favourite == false) {
-                    updateFavourite(true, place.id!!)
-                    binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                } else {
-                    updateFavourite(false, place.id!!)
-                    binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24)
-                }
+                place.favourite = !place.favourite!!
+                updateFavourite(place.favourite!!, place.id!!)
+                Toast.makeText(this,"Changed from favourites",Toast.LENGTH_SHORT)
+                if (place.favourite!!) binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24) else binding.ivFavourite.setImageResource(
+                    R.drawable.ic_baseline_favorite_border_24
+                )
             }
+            if (place.favourite!!) binding.ivFavourite.setImageResource(R.drawable.ic_baseline_favorite_24) else binding.ivFavourite.setImageResource(
+                R.drawable.ic_baseline_favorite_border_24
+            )
         }
     }
 

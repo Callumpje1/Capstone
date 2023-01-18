@@ -20,9 +20,10 @@ class HomeFragment : Fragment() {
 
     private val places = arrayListOf<Place>()
 
-    private val favouritesAdapter = FavouritesAdapter(places) { favourite, id ->
+    private val favouritesAdapter = FavouritesAdapter(places){ favourite, id ->
         spotsViewModel.updateFavourites(favourite, id)
     }
+
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
