@@ -25,11 +25,11 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Data Class" />
-        <option value="navigationResourceFile" />
         <option value="Kotlin Interface" />
         <option value="Kotlin Class" />
         <option value="valueResourceFile" />
         <option value="layoutResourceFile" />
+        <option value="navigationResourceFile" />
       </list>
     </option>
   </component>

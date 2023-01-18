@@ -7,7 +7,7 @@
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="@color/broken_white"
+    app:cardBackgroundColor="#555555"
     app:cardCornerRadius="10dp">
 
 
@@ -26,9 +26,9 @@
             android:id="@+id/iv_favourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_baseline_favorite_border_24" />
 
@@ -36,13 +36,14 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"            android:layout_marginStart="20dp"
+            android:layout_marginBottom="60dp"
             android:text="@string/tv_location_title"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/broken_white"/>
 
         <TextView
             android:id="@+id/tv_address"
@@ -54,7 +55,8 @@
             android:layout_marginBottom="20dp"
             android:text="@string/tv_location_description"
             android:textSize="20sp"
-            android:textStyle="italic"/>
+            android:textStyle="italic"
+            android:textColor="@color/broken_white"/>
 
     </RelativeLayout>
 

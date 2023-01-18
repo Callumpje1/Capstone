@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val spotsViewModel: SpotsViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,15 +26,16 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_spots, R.id.navigation_favourites
             )
         )
 
-        spotsViewModel.getAllPlaces()
+        supportActionBar?.setDisplayShowHomeEnabled(true);
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setIcon(R.drawable.locals_logo_white);
 
         FirebaseFirestore.setLoggingEnabled(true)
 

@@ -10,7 +10,7 @@ data class Place(
 
     val imageUrl: String?,
 
-    val favourite: Boolean?,
+    var favourite: Boolean?,
 
     val LatLng: LatLng?,
 

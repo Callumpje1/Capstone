@@ -1,21 +1,26 @@
 package com.example.localsapp.ui.spots
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
-import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.example.localsapp.MainActivity
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ActivitySpotsBinding
 import com.google.android.gms.common.api.Status
@@ -26,7 +31,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -38,8 +42,6 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiClickListener {
 
     private val spotsViewModel: SpotsViewModel by viewModels()
-
-    private val places = arrayListOf<com.example.localsapp.model.Place>()
 
     private lateinit var binding: ActivitySpotsBinding
 
@@ -60,20 +62,19 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
         binding = ActivitySpotsBinding.inflate(layoutInflater)
 
+        setContentView(binding.root)
+
         Places.initialize(applicationContext, getString(R.string.api_key))
         placesClient = Places.createClient(this)
-
-        map?.setOnPoiClickListener { marker ->
-            Toast.makeText(applicationContext, "Marker Title: ${marker.name}", Toast.LENGTH_SHORT)
-                .show()
-        }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
-        setContentView(binding.root)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setIcon(R.drawable.locals_logo_white)
 
         binding.btnAdd.setOnClickListener {
             openAutoCompleteDialog()
@@ -81,14 +82,17 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        startActivityForResult(Intent(applicationContext, MainActivity::class.java), 0);
+        return true;
+    }
 
     private fun openAutoCompleteDialog() {
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
 
-        val builder =
-            AlertDialog.Builder(this).setView(dialogLayout).show()
+        val builder = AlertDialog.Builder(this).setView(dialogLayout).show()
 
-        setupPlacesAutoComplete()
+        addPlacesAutoComplete()
 
         dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
             Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
@@ -99,7 +103,7 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
         }
     }
 
-    private fun setupPlacesAutoComplete() {
+    private fun addPlacesAutoComplete() {
         val autocompleteFragment =
             supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
@@ -115,10 +119,12 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
+                val metaData = place.photoMetadatas?.get(0).toString()
                 spotsViewModel.addPlace(
                     place.name,
                     place.address,
-                    place.photoMetadatas?.get(0).toString(),
+                    metaData.substring(metaData.indexOf("photoReference="), metaData.indexOf("}"))
+                        .replace("photoReference=", ""),
                     false,
                     place.latLng,
                     place.id,
@@ -132,14 +138,14 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
                 Log.i(TAG, status.statusMessage.toString())
             }
         })
+
+        autocompleteFragment.onDestroy()
     }
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
 
         map.setOnPoiClickListener(this)
-
-        showPlacesOnMap()
 
         getLocationPermission()
 
@@ -231,54 +237,12 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
         }
     }
 
-/*
     override fun onPoiClick(poi: PointOfInterest) {
-        val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
-
-        val builder =
-            AlertDialog.Builder(applicationContext).setView(dialogLayout).show()
-
-        dialogLayout.findViewById<TextView>(R.id.title).text = poi.name
-
-        dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
-            Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
-            builder.hide()
-        }
-        dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
-            builder.hide()
-        }
-
-        setupPlacesAutoComplete()
-    }*/
-
-    private fun showPlacesOnMap() {
-        if (map == null) {
-            return
-        }
-        if (locationPermissionGranted) {
-            for (place in places) {
-                places.addAll(places)
-                Log.i(TAG, places.toString())
-                map?.addMarker(
-                    MarkerOptions().title(place.title)
-                        .position(place.LatLng!!)
-                )
-            }
-        } else {
-            getLocationPermission()
-        }
-
+        Toast.makeText(applicationContext, poi.name, Toast.LENGTH_LONG).show()
     }
-
 
     companion object {
         private const val DEFAULT_ZOOM = 15
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
-        private const val KEY_CAMERA_POSITION = "camera_position"
-        private const val KEY_LOCATION = "location"
-    }
-
-    override fun onPoiClick(p0: PointOfInterest) {
-
     }
 }

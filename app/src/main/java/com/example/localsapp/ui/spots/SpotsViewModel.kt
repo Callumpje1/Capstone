@@ -13,27 +13,29 @@ import kotlinx.coroutines.launch
 
 class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val TAG = "FIRESTORE"
-
     private val placeRepository: PlaceRepository = PlaceRepository()
 
     val places: LiveData<MutableList<Place>> = placeRepository.places
 
-    val createSuccess: LiveData<Boolean> = placeRepository.createSuccess
-
     private val _errorText: MutableLiveData<String> = MutableLiveData()
-
-    val errorText: LiveData<String>
-        get() = _errorText
 
     fun getAllPlaces() {
         viewModelScope.launch {
             try {
                 placeRepository.getPlaces()
             } catch (ex: PlaceRepository.PlaceRetrievalError) {
-                val errorMsg = "Something went wrong while retrieving this place.\n" +
-                        "It could be that you still need to install your own google-services.json file from Firestore."
-                Log.e(TAG, ex.message ?: errorMsg)
+                val errorMsg = "Something went wrong while retrieving this place."
+                _errorText.value = errorMsg
+            }
+        }
+    }
+
+    fun getFavourites(){
+        viewModelScope.launch {
+            try {
+                placeRepository.getFavourites()
+            }catch (ex: PlaceRepository.PlaceRetrievalError) {
+                val errorMsg = "Something went wrong while retrieving this place."
                 _errorText.value = errorMsg
             }
         }
@@ -41,14 +43,13 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateFavourites(
         favourite: Boolean,
+        id: String
     ) {
         viewModelScope.launch {
             try {
-                placeRepository.updateFavourites(favourite)
+                placeRepository.updateFavourites(favourite,id)
             } catch (ex: PlaceRepository.PlaceSaveError) {
-                val errorMsg = "Something went wrong while saving this place.\n" +
-                        "It could be that you still need to install your own google-services.json file from Firestore."
-                Log.e(TAG, ex.message ?: errorMsg)
+                val errorMsg = "Something went wrong while saving this place."
                 _errorText.value = errorMsg
             }
         }
@@ -64,14 +65,12 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         id: String?
     ) {
         val place =
-            Place(title, address, imageUrl, favourite, latLng, id)
+            Place(title, address, imageUrl.toString(), favourite, latLng, id)
         viewModelScope.launch {
             try {
                 placeRepository.addPlace(place)
             } catch (ex: PlaceRepository.PlaceSaveError) {
-                val errorMsg = "Something went wrong while saving this place.\n" +
-                        "It could be that you still need to install your own google-services.json file from Firestore."
-                Log.e(TAG, ex.message ?: errorMsg)
+                val errorMsg = "Something went wrong while saving this place."
                 _errorText.value = errorMsg
             }
         }

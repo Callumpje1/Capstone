@@ -1,8 +1,6 @@
 package com.example.localsapp.ui.home
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +9,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.localsapp.R
 import com.example.localsapp.databinding.FragmentHomeBinding
 import com.example.localsapp.model.Place
+import com.example.localsapp.ui.favourites.FavouritesAdapter
 import com.example.localsapp.ui.spots.SpotsViewModel
 
 class HomeFragment : Fragment() {
@@ -22,12 +20,9 @@ class HomeFragment : Fragment() {
 
     private val places = arrayListOf<Place>()
 
-    private val homeAdapter = HomeAdapter(places) { place: Place ->
-        onPlaceClick(
-            place
-        )
+    private val favouritesAdapter = FavouritesAdapter(places) { favourite, id ->
+        spotsViewModel.updateFavourites(favourite, id)
     }
-
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
@@ -39,6 +34,8 @@ class HomeFragment : Fragment() {
 
         observePlaces(viewLifecycleOwner)
 
+        spotsViewModel.getAllPlaces()
+
         return binding.root
     }
 
@@ -46,7 +43,7 @@ class HomeFragment : Fragment() {
         spotsViewModel.places.observe(viewLifeCycleOwner) { place ->
             places.clear()
             places.addAll(place)
-            homeAdapter.notifyDataSetChanged()
+            favouritesAdapter.notifyDataSetChanged()
         }
     }
 
@@ -59,11 +56,7 @@ class HomeFragment : Fragment() {
     private fun initViews() {
         binding.rvRestaurants.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        binding.rvRestaurants.adapter = homeAdapter
-    }
-
-    private fun onPlaceClick(place: Place) {
-        Log.i(TAG, place.toString())
+        binding.rvRestaurants.adapter = favouritesAdapter
     }
 
     override fun onDestroyView() {
