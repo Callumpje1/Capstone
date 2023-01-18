@@ -40,18 +40,11 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateFavourites(
-        title: String?,
-        address: String?,
-        imageUrl: String?,
         favourite: Boolean,
-        latLng: LatLng?,
-        id: String?
     ) {
-        val place =
-            Place(title, address, imageUrl, favourite, latLng, id)
         viewModelScope.launch {
             try {
-                placeRepository.addPlace(place)
+                placeRepository.updateFavourites(favourite)
             } catch (ex: PlaceRepository.PlaceSaveError) {
                 val errorMsg = "Something went wrong while saving this place.\n" +
                         "It could be that you still need to install your own google-services.json file from Firestore."

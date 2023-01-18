@@ -22,7 +22,11 @@ class HomeFragment : Fragment() {
 
     private val places = arrayListOf<Place>()
 
-    private val homeAdapter = HomeAdapter(places) { place: Place -> onPlaceClick(place) }
+    private val homeAdapter = HomeAdapter(places) { place: Place ->
+        onPlaceClick(
+            place
+        )
+    }
 
     private var _binding: FragmentHomeBinding? = null
 

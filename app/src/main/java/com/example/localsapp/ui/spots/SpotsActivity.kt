@@ -3,7 +3,6 @@ package com.example.localsapp.ui.spots
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.DialogInterface
 import android.content.pm.PackageManager
@@ -56,7 +55,6 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
     private var lastKnownLocation: Location? = null
 
-    @SuppressLint("PotentialBehaviorOverride")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -88,7 +86,9 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
 
         val builder =
-            AlertDialog.Builder(applicationContext).setView(dialogLayout).show()
+            AlertDialog.Builder(this).setView(dialogLayout).show()
+
+        setupPlacesAutoComplete()
 
         dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
             Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
@@ -97,9 +97,6 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
         dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
             builder.hide()
         }
-
-        setupPlacesAutoComplete()
-
     }
 
     private fun setupPlacesAutoComplete() {
@@ -135,14 +132,6 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
                 Log.i(TAG, status.statusMessage.toString())
             }
         })
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        map?.let { map ->
-            outState.putParcelable(KEY_CAMERA_POSITION, map.cameraPosition)
-            outState.putParcelable(KEY_LOCATION, lastKnownLocation)
-        }
-        super.onSaveInstanceState(outState)
     }
 
     override fun onMapReady(map: GoogleMap) {

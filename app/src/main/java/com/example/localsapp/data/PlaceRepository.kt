@@ -1,12 +1,10 @@
 package com.example.localsapp.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.localsapp.model.Place
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 import java.util.UUID
 
 class PlaceRepository {
@@ -39,11 +37,12 @@ class PlaceRepository {
         }
     }
 
-    suspend fun updateFavourites(place: Place) {
+    suspend fun updateFavourites(favourite: Boolean) {
         try {
             firestore.collection("Places")
                 .document("Favourites")
-                .set(place.favourite!!).await()
+                .set(favourite)
+                .await()
             _createSuccess.value = true
         } catch (e: Exception) {
             throw PlaceSaveError(e.message.toString(), e)
