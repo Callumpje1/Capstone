@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.localsapp.MainActivity
 import com.example.localsapp.R
 import com.example.localsapp.databinding.ActivitySpotsBinding
@@ -23,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -86,15 +88,17 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
         val dialogLayout = layoutInflater.inflate(R.layout.fragment_add_location_dialog, null)
 
-        addPlacesAutoComplete()
-
         val builder = AlertDialog.Builder(this).setView(dialogLayout).show()
+
+        addPlacesAutoComplete()
 
         dialogLayout.findViewById<Button>(R.id.ok_button).setOnClickListener {
             Toast.makeText(applicationContext, "Location added", Toast.LENGTH_SHORT).show()
+            startActivityForResult(Intent(applicationContext, MainActivity::class.java), 0)
             builder.hide()
         }
         dialogLayout.findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            startActivityForResult(Intent(applicationContext, SpotsActivity::class.java), 0)
             builder.hide()
         }
 
@@ -232,6 +236,10 @@ class SpotsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnPoiCl
 
     override fun onPoiClick(poi: PointOfInterest) {
         Toast.makeText(applicationContext, poi.name, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     companion object {

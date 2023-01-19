@@ -54,7 +54,6 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     fun addPlace(
         title: String?,
         address: String?,
