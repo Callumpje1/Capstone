@@ -21,4 +21,6 @@
     <string name="yes">Yes</string>
     <string name="place_image">Place Image</string>
     <string name="favourite_image">Favourite Image</string>
+    <string name="location_added">Location added</string>
+    <string name="location_not_added">Location not added</string>
 </resources>

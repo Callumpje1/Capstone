@@ -17,6 +17,10 @@ class PlaceRepository {
 
     private val _createSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
+    /**
+     * Get places
+     * returns a List of all places
+     */
     fun getPlaces() {
         try {
             fireStore.collection("Places")
@@ -32,6 +36,10 @@ class PlaceRepository {
         }
     }
 
+    /**
+     * Get favourites
+     * returns a List of all favourite places
+     */
     fun getFavourites() {
         try {
             fireStore.collection("Places")
@@ -48,6 +56,10 @@ class PlaceRepository {
         }
     }
 
+    /**
+     * Update favourites
+     * Updates the favourite field for given place id
+     */
     suspend fun updateFavourites(favourite: Boolean, id: String) {
         try {
             fireStore.collection("Places")
@@ -61,6 +73,10 @@ class PlaceRepository {
         }
     }
 
+    /**
+     * Add place
+     * Add place to Places collection, add randomUUID if id null
+     */
     suspend fun addPlace(place: Place) {
         try {
             fireStore.collection("Places")

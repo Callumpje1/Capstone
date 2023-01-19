@@ -1,5 +1,6 @@
 package com.example.localsapp.ui.favourites
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.localsapp.databinding.FragmentFavouritesBinding
 import com.example.localsapp.model.Place
+import com.example.localsapp.ui.spots.SpotsActivity
 import com.example.localsapp.ui.spots.SpotsViewModel
 
 class FavouritesFragment : Fragment() {
@@ -38,6 +40,10 @@ class FavouritesFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Observe places for changes and update
+     * @param viewLifeCycleOwner
+     */
     private fun observePlaces(viewLifeCycleOwner: LifecycleOwner) {
         spotsViewModel.places.observe(viewLifeCycleOwner) { place ->
             places.clear()

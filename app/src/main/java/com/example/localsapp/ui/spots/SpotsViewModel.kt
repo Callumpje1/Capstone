@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.localsapp.data.PlaceRepository
 import com.example.localsapp.model.Place
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
 class SpotsViewModel(application: Application) : AndroidViewModel(application) {
@@ -18,6 +17,10 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _errorText: MutableLiveData<String> = MutableLiveData()
 
+    /**
+     * Get places
+     * returns a List of all places
+     */
     fun getAllPlaces() {
         viewModelScope.launch {
             try {
@@ -29,24 +32,32 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getFavourites(){
+    /**
+     * Get favourites
+     * returns a List of all favourite places
+     */
+    fun getFavourites() {
         viewModelScope.launch {
             try {
                 placeRepository.getFavourites()
-            }catch (ex: PlaceRepository.PlaceRetrievalError) {
+            } catch (ex: PlaceRepository.PlaceRetrievalError) {
                 val errorMsg = "Something went wrong while retrieving this place."
                 _errorText.value = errorMsg
             }
         }
     }
 
+    /**
+     * Update favourites
+     * Updates the favourite field for given place id
+     */
     fun updateFavourites(
         favourite: Boolean,
         id: String
     ) {
         viewModelScope.launch {
             try {
-                placeRepository.updateFavourites(favourite,id)
+                placeRepository.updateFavourites(favourite, id)
             } catch (ex: PlaceRepository.PlaceSaveError) {
                 val errorMsg = "Something went wrong while saving this place."
                 _errorText.value = errorMsg
@@ -54,6 +65,10 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Add place
+     * Add place to Places collection, add randomUUID if id null
+     */
     fun addPlace(
         title: String?,
         address: String?,

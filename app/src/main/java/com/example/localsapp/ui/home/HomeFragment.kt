@@ -40,6 +40,10 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Observe places for changes and update
+     * @param viewLifeCycleOwner
+     */
     private fun observePlaces(viewLifeCycleOwner: LifecycleOwner) {
         spotsViewModel.places.observe(viewLifeCycleOwner) { place ->
             places.clear()
